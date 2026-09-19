@@ -1,4 +1,6 @@
 import streamlit as st
+import os
+import time
 from groq import Groq
 import numpy as np
 import json
@@ -86,16 +88,17 @@ RULES:
 4. Be helpful, professional, and concise.
 """
 
-def log_interaction(question, response_type, answer):
+def log_interaction(question, response_type, answer, response_time=None, tokens_used=None):
     log_file = "conversation_log.csv"
     file_exists = os.path.isfile(log_file)
     with open(log_file, mode='a', newline='') as f:
         writer = csv.writer(f)
         if not file_exists:
-            writer.writerow(["timestamp", "question", "response_type", "answer"])
-        writer.writerow([datetime.now().isoformat(), question, response_type, answer])
+            writer.writerow(["timestamp", "question", "response_type", "answer", "response_time_sec", "tokens_used"])
+        writer.writerow([datetime.now().isoformat(), question, response_type, answer, response_time, tokens_used])
 
 def get_response(question, history):
+    start_time = time.time()
     context = get_relevant_context(question)
     messages = [{"role": "system", "content": system_prompt_tool}] + history + \
                [{"role": "user", "content": f"Context: {context}\n\nQuestion: {question}"}]
@@ -108,27 +111,29 @@ def get_response(question, history):
             tool_choice="auto",
             max_tokens=500
         )
+        response_time = round(time.time() - start_time, 2)
+        tokens_used = response.usage.total_tokens if response.usage else None
 
         if response.choices[0].message.tool_calls:
             tool_call = response.choices[0].message.tool_calls[0]
             args = json.loads(tool_call.function.arguments)
             if tool_call.function.name == "escalate_to_support":
                 reply = f"{args['message']}\n\n📞 Contact Tabby support at help@tabby.ai or through the app."
-                log_interaction(question, "escalate", reply)
+                log_interaction(question, "escalate", reply, response_time, tokens_used)
                 return reply
             else:
-                log_interaction(question, "answer", args["answer"])
+                log_interaction(question, "answer", args["answer"], response_time, tokens_used)
                 return args["answer"]
         else:
             reply = response.choices[0].message.content
-            log_interaction(question, "answer", reply)
+            log_interaction(question, "answer", reply, response_time, tokens_used)
             return reply
 
     except Exception as e:
+        response_time = round(time.time() - start_time, 2)
         reply = "Sorry, I'm having trouble answering right now. Please try again in a moment, or contact support at help@tabby.ai."
-        log_interaction(question, "error", str(e))
+        log_interaction(question, "error", str(e), response_time, None)
         return reply
-
 # ---- Streamlit UI ----
 st.set_page_config(page_title="Tabby Support Assistant", page_icon="💬")
 st.title("💬 Tabby Support Assistant")
