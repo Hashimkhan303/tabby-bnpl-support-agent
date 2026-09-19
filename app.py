@@ -139,6 +139,16 @@ st.set_page_config(page_title="Tabby Support Assistant", page_icon="💬")
 st.title("💬 Tabby Support Assistant")
 st.caption("Ask me about payments, refunds, or policies. Account-specific questions get routed to human support.")
 
+if os.path.isfile("conversation_log.csv"):
+    with open("conversation_log.csv", "rb") as f:
+        st.download_button(
+            label="Download conversation log (CSV)",
+            data=f,
+            file_name="conversation_log.csv",
+            mime="text/csv"
+        )
+
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
