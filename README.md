@@ -25,7 +25,7 @@ An AI-powered customer support agent for a Buy Now, Pay Later (BNPL) platform, b
 4. Each interaction (question, response type, timestamp) is logged to a CSV file for later analysis.
 
 ## Live Demo
-[Add your Streamlit Cloud link here once deployed]
+[Try it live](https://tabby-bnpl-support-agent-2e7ccvrxldd5ttvs25drgx.streamlit.app/)
 
 ## Project Context
 This is Project 1 in a 3-part portfolio series aimed at AI automation / AI engineer roles in the UAE fintech and BNPL sector (Tabby, Tamara). The series progresses from:
