@@ -135,9 +135,9 @@ def get_response(question, history):
         log_interaction(question, "error", str(e), response_time, None)
         return reply
 # ---- Streamlit UI ----
-st.set_page_config(page_title="Tabby Support Assistant", page_icon="💬")
-st.title("💬 Tabby Support Assistant")
-st.caption("Ask me about payments, refunds, or policies. Account-specific questions get routed to human support.")
+st.set_page_config(page_title="AI Support Assistant", page_icon="💬")
+st.title("💬 AI Support Assistant — Demo")
+st.caption("Sample demo trained on a fintech FAQ. Ask about payments, refunds, or policies. Account-specific questions get routed to human support. I customize this with your business's actual content.")
 
 if os.path.isfile("conversation_log.csv"):
     with open("conversation_log.csv", "rb") as f:
